@@ -1,0 +1,74 @@
+---
+title: "robbie_williams_google_trends"
+format: html
+---
+
+```{r}
+library(tidyverse)
+library(digest)
+```
+
+```{r}
+robbie_williams_df <- read_csv("robbie_williams_google_trends/data/robbie_williams_g_trends_data.csv", skip = 1) |>
+  rename(country = 1, score = 2) |> 
+  filter(!is.na(score))
+
+robbie_williams_all_df <- read_csv("robbie_williams_google_trends/data/robbie_williams_g_trends_all_data.csv", skip = 1) |>
+  rename(country = 1, score = 2) |> 
+  filter(!is.na(score))
+
+library(ggplot2)
+
+
+
+library(ggplot2)
+
+
+ggplot(data = robbie_williams_df, aes(x = reorder(country, score), y = score)) +
+  geom_col(aes(fill = ifelse(country %in% c("United Kingdom", "United States"), "red", "grey")), 
+           color = "black",  # Add black outline
+           width = 1) +
+  scale_fill_identity() + # Use the colors specified in the data
+  labs(title = "Bar Chart of Scores by Country (Descending Order)",
+       x = "Country",
+       y = "Score") +
+  theme_minimal() +
+  coord_flip()
+```
+
+
+```{r}
+ggplot(data = geoMap_2_, aes(x = reorder(country, score), y = score)) +
+  geom_col(aes(fill = ifelse(country %in% c("United Kingdom", "United States"), "red", "grey"))) +
+  scale_fill_identity() + # Use the colors specified in the data
+  labs(title = "Bar Chart of Scores by Country (Descending Order)",
+       x = "Country",
+       y = "Score") +
+  theme_minimal() +
+  coord_flip()
+
+```
+
+
+```{r}
+library(ggplot2)
+
+library(ggplot2)
+
+ggplot(data = robbie_williams_df, aes(x = reorder(country, score), y = score)) +
+  geom_col(aes(fill = ifelse(country %in% c("United Kingdom", "United States"), "#C8102E", "grey")), 
+
+           width = 0.7) +
+  scale_fill_identity() + # Use the colors specified in the data
+  labs(title = "Bar Chart of Scores by Country (Descending Order)",
+       x = "Country",
+       y = "Score") +
+  coord_flip() +
+  theme_minimal() +
+  theme(
+    panel.grid.major.x = element_blank(),    # Remove vertical grid lines
+    panel.grid.major.y = element_blank(),       #   # Keep horizontal grid lines
+    panel.grid.minor = element_blank()       # Remove minor grid lines
+  )
+```
+
