@@ -1,0 +1,105 @@
+---
+title: "67-vs-69-viz"
+format: html
+---
+
+```{r}
+library(tidyverse)
+
+```
+
+```{r}
+google_trends_67_69_2004_2025 <- read_csv("media/google-trends/67-vs-69/data/google_trends_67_69_2004_2025.csv", skip = 1)
+
+google_trends_67_69_2004_2025 <- google_trends_67_69_2004_2025 |>
+    rename(
+    month = 1,
+    `67` = 2,
+    `69` = 3
+  )|>
+  mutate(
+    month = ym(month)
+  ) |>
+  pivot_longer(`67`:`69`, names_to = "term", values_to = "interest")
+
+# get last points for each term
+line_ends <- google_trends_67_69_2004_2025 |>
+  group_by(term) |>
+  filter(month == max(month))
+```
+
+
+```{r}
+ggplot() +
+  geom_line(
+    data = filter(google_trends_67_69_2004_2025, term == "69"),
+    aes(x = month, y = interest),
+    color = "gray60",
+    linewidth = 2
+  ) +
+  geom_line(
+    data = filter(google_trends_67_69_2004_2025, term == "67"),
+    aes(x = month, y = interest),
+    color = "#F40000",
+    linewidth = 2
+  ) +
+geom_text(
+  data = line_ends,
+  aes(
+    x = month + 100,   # move right
+    y = interest,
+    label = term,
+    color = term
+  ),
+  family = "Menlo",
+  size = 8,
+  fontface = "bold",
+  hjust = 0
+) +
+  scale_color_manual(values = c("67" = "#F40000", "69" = "gray60")) +
+  coord_cartesian(clip = "off") +  # allow text to extend beyond plot area
+  labs(
+    title = "The Internet Has a New Favorite Number",
+    subtitle = "Worldwide Google Search Data: \"67\" vs. \"69\" | 2004 – Nov 2025 | Data is indexed (Max = 100)",
+    x = "Date",
+    y = "Search Interest",
+    caption = "Source: Google Trends                                        sudomasochist.substack.com"
+  ) +
+  theme_minimal(base_family = "Menlo", base_size = 12) +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold", size = rel(1.6), hjust = 0.5, margin = margin(b = 5)),
+    plot.title.position = "plot",
+    plot.subtitle = element_text(hjust = 0.5, margin = margin(b = 10), color = "gray20", size = 10),
+    plot.caption = element_text(size = rel(0.9), color = "gray60", hjust = 0),
+    plot.caption.position = "plot",
+    axis.title.y = element_blank(),
+    axis.title.x = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_blank(),
+    axis.line.y = element_line(color = "black", linewidth = 0.5),
+    axis.line.x = element_line(color = "black", linewidth = 0.5),
+    axis.ticks.y = element_line(color = "black", linewidth = 0.5),
+    axis.ticks = element_blank(),
+    panel.background = element_rect(fill = "white", color = NA),
+    plot.margin = margin(10, 10, 5, 5),
+    axis.text.x = element_text(size = rel(1.2)),
+    axis.text.y = element_text(size = rel(1.2))
+  )
+
+```
+
+
+
+```{r}
+ggsave(
+  "media/google-trends/67-vs-69/67_vs_69.png",
+  plot = last_plot(),
+  width = 8,
+  height = 6,
+  units = "in",
+  dpi = 300,
+  bg = "white"
+)
+```
