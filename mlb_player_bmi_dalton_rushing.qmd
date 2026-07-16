@@ -1,0 +1,90 @@
+---
+title: "mlb-player-bmi-dalton-rushing"
+format: html
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+mlb_2026_player_heights_weights <- read_csv("Documents/r_repos/blog_investigations/sports/baseball/mlb-player-bmi-dalton-rushing/mlb_2026_player_heights_weights.csv")
+
+mlb_bmi <- mlb_2026_player_heights_weights %>%
+  mutate(
+    bmi = (weight_lbs / (height_inches^2)) * 703,
+    highlight = full_name == "Miguel Amaya" | full_name == "Dalton Rushing"
+  ) %>%
+  arrange(bmi) %>%
+  mutate(player_order = row_number())
+```
+
+
+```{r}
+# Plot all players ordered by BMI
+
+ggplot(mlb_bmi, aes(x = player_order, y = bmi)) +
+
+  # Background players
+  geom_point(
+    data = dplyr::filter(mlb_bmi, highlight == FALSE),
+    color = "grey60",
+    size = 2,
+    alpha = 0.8
+  ) +
+
+  # Dalton Rushing (Dodger Blue)
+  geom_point(
+    data = dplyr::filter(mlb_bmi, full_name == "Dalton Rushing"),
+    color = "#005A9C",
+    size = 4
+  ) +
+
+  # Miguel Amaya (Cubs Blue)
+  geom_point(
+    data = dplyr::filter(mlb_bmi, full_name == "Miguel Amaya"),
+    color = "#0E3386",
+    size = 4
+  ) +
+
+  labs(
+    title = "Dalton Rushing Calls Miguel Amaya a “Fat F--k”",
+    subtitle = "BMI distribution for all 2026 MLB players with Rushing and Amaya highlighted for comparison",
+    caption = "Source: MLB Stats API                                                                                     @sudo_masochist",
+    x = "2026 MLB Players (Lowest to Highest BMI)",
+    y = "BMI (Body Mass Index)"
+  ) +
+  
+  theme_bw(base_family = "Menlo", base_size = 10) +
+  
+  theme(
+    # Titles and Subtitles
+    plot.title = element_text(face = "bold", size = rel(1.4)), # Larger title
+    plot.subtitle = element_text(size = rel(0.8)),
+    
+    # Axis Labels
+    axis.title = element_text(size = rel(0.7)), # Slightly smaller x/y labels
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    
+    # Grid and Cleanliness
+    panel.grid.minor.y = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.x = element_blank(),
+    
+    # Caption
+    plot.caption = element_text(size = rel(0.7), color = "grey40")
+  )
+# Source: MLB Stats API
+
+
+ggsave(
+  "sports/baseball/mlb-player-bmi-dalton-rushing/mlb_player_bmi_dalton_rushing.png",
+  plot = last_plot(),
+  width = 2160,
+  height = 1114,
+  units = "px",
+  dpi = 300,
+  bg = "white"
+)
+```
